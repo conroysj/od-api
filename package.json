@@ -1,0 +1,16 @@
+{
+  "name": "opendoor-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "build": "babel src --out-dir lib",
+    "start": "node ./lib/app.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "babel": "^5.8.23",
+    "express": "^4.13.3"
+  }
+}
