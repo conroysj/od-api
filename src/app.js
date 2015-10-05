@@ -1,5 +1,6 @@
 require('babel/polyfill');
 const app = require('express')();
+
 // const mysql = require('mysql');
 // const connection = mysql.createConnection({
 //   host     : 'localhost',
@@ -17,43 +18,18 @@ const app = require('express')();
 //   console.log('connected as id ' + connection.threadId);
 // });
 
-const fs = require('fs');
-const parse = require('csv-parse');
 const path = require('path');
+const dataHandler = require('./services/dataHandler.js')
 
-
-function importFile(file){
-  return new Promise((resolve, reject) => {
-    fs.readFile(file, (err, data)=> {
-      if (err) reject(err);
-      else resolve(data);
-    });
+app.get('/listings', (req, res) => {
+  dataHandler.getListings(req.query, data => {
+    res.status(200).json(data);
   });
-}
-
-function parseFile(file){
-  return new Promise((resole, reject) => {
-    parse(input, {trim: 'true'}, (err, output) => {
-      if (err) reject(err);
-      else resolve(output);
-    })
-  })
-}
-
-importFile(path.join(__dirname, './listings.csv')).then(function(value){
-  console.log('value' + value);
-  parseFile(value).then(function(parsedValue) {
-    console.log('parsedValue' + parsedValue);
-  })
 });
 
-// parse(input, {trim: 'true'}, (err, output)=> {
-//     console.log(output)
-// });
-
-app.get('/listings', function(req, res){
-
-  res.end('Here you go' + res.data);
+app.use( (err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Server-side error!');
 });
 
 app.listen(3000);
