@@ -1,45 +1,45 @@
-const fs = require('fs');
-const parse = require('csv-parse');
-const path = require('path');
+import fs from 'fs';
+import parse from 'csv-parse';
+import path from 'path';
 
-var importListings = function(cb){
-  var listings;
+function importListings (cb){
+  let listings;
 
-  var stream = fs.createReadStream(path.join(__dirname, '../../assets/listings.csv'))
+  const stream = fs.createReadStream(path.join(__dirname, '../../assets/listings.csv'));
 
   stream.on('data', chunk => {
-    listings += chunk
+    listings += chunk;
   });
 
   stream.on('error', err => {
     console.error('stack err: ' + err.stack);
-  })
+  });
 
   stream.on('end', () => {
     parse(listings, {trim: 'true'}, (err, output) => {
       if (err) throw (err);
-      else cb(output)
-    })
+      else cb(output);
+    });
   });
-};
+}
 
-exports.getListings = function(requestData, cb){
+export function getListings(requestData, cb){
 
-  var results = {
+  let results = {
     type: "FeatureCollection",
     features: []
   };
 
-  requestData.min_price = requestData.min_price || 0
-  requestData.max_price = requestData.max_price || 100000000
-  requestData.min_bed = requestData.min_bed || 0
-  requestData.max_bed = requestData.max_bed || 99
-  requestData.min_bath = requestData.min_bath || 0
-  requestData.max_bath = requestData.max_bath || 99
+  requestData.min_price = requestData.min_price || 0;
+  requestData.max_price = requestData.max_price || Number.POSITIVE_INFINITY;
+  requestData.min_bed = requestData.min_bed || 0;
+  requestData.max_bed = requestData.max_bed || Number.POSITIVE_INFINITY;
+  requestData.min_bath = requestData.min_bath || 0;
+  requestData.max_bath = requestData.max_bath || Number.POSITIVE_INFINITY;
 
   importListings((allListings) => {
-    for (var i = 0; i < allListings.length; i++) {
-      var listing = allListings[i];
+    for (let i = 0; i < allListings.length; i++) {
+      let listing = allListings[i];
       if (listing[3] >= requestData.min_price &&
           listing[3] <= requestData.max_price &&
           listing[4] >= requestData.min_bed &&
@@ -60,13 +60,13 @@ exports.getListings = function(requestData, cb){
             bathrooms: listing[5],
             sq_ft: listing[6]
           }
-        }
+        };
         requestedListing.geometry.coordinates.push(listing[7], listing[8]);
         results.features.push(requestedListing);
       }
     }
     cb(results);
-  })
-};
+  });
+}
 
 
