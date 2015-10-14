@@ -30,6 +30,13 @@ export function getListings(requestData, cb){
     features: []
   };
 
+  for (var datum in requestData) {
+    if (!Number.isInteger(parseInt(requestData[datum], 10))) {
+      console.log(datum);
+      requestData[datum] = '';
+    }
+  };
+
   requestData.min_price = requestData.min_price || 0;
   requestData.max_price = requestData.max_price || Number.POSITIVE_INFINITY;
   requestData.min_bed = requestData.min_bed || 0;

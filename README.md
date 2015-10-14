@@ -51,7 +51,7 @@ For testing: `grunt test`
 
 ### TODOs
 
-- Import CSV and parse it into an SQL database to allow for more efficient, faster queries of relational data
-- Expand test coverage
-- Build out 'OPTIONS' request routing to provide API information
-- Implement logging middleware
+- Import CSV and parse it into an SQL database to allow for more efficient, faster queries of relational data.
+- Expand test coverage.
+- Build out 'OPTIONS' request routing to provide API information.
+- Implement logging middleware.
