@@ -30,34 +30,52 @@ export function getListings(requestData, cb){
     features: []
   };
 
-  requestData.min_price = requestData.min_price || 0;
-  requestData.max_price = requestData.max_price || Number.POSITIVE_INFINITY;
-  requestData.min_bed = requestData.min_bed || 0;
-  requestData.max_bed = requestData.max_bed || Number.POSITIVE_INFINITY;
-  requestData.min_bath = requestData.min_bath || 0;
-  requestData.max_bath = requestData.max_bath || Number.POSITIVE_INFINITY;
+  // Server-side form validation
+  for (let datum in requestData) {
+    if (!Number.isInteger(parseInt(requestData[datum], 10))) {
+      requestData[datum] = '';
+    }
+  };
+
+  // Addresses optional query parameters
+  ((data) => {
+    for (let datum of data) {
+      requestData[datum] = parseInt(requestData[datum]) || 0;
+    }
+  })(['min_price', 'min_bed', 'min_bath']);
+
+    ((data) => {
+    for (let datum of data) {
+      requestData[datum] = parseInt(requestData[datum]) || Number.POSITIVE_INFINITY;
+    }
+  })(['max_price', 'max_bed', 'max_bath']);
+
+  // Filter accroding to request parameters
 
   importListings((allListings) => {
     for (let i = 0; i < allListings.length; i++) {
-      let listing = allListings[i];
-      if (listing[3] >= requestData.min_price &&
-          listing[3] <= requestData.max_price &&
-          listing[4] >= requestData.min_bed &&
-          listing[4] <= requestData.max_bed &&
-          listing[5] >= requestData.min_bath &&
-          listing[5] <= requestData.max_bath) {
+
+      let listing = allListings[i], listingPrice = listing[3], listingBed = listing[4], listingBath = listing[5];
+
+      if (listingPrice >= requestData.min_price &&
+          listingPrice <= requestData.max_price &&
+          listingBed >= requestData.min_bed &&
+          listingBed <= requestData.max_bed &&
+          listingBath >= requestData.min_bath &&
+          listingBath <= requestData.max_bath) {
+
         var requestedListing = {
           type: "Feature",
           geometry: {
-            type: "point",
+            type: "Point",
             coordinates: []
           },
           properties: {
             id: listing[0],
-            price: listing[3],
+            price: listingPrice,
             street: listing[1],
-            bedrooms: listing[4],
-            bathrooms: listing[5],
+            bedrooms: listingBed,
+            bathrooms: listingBath,
             sq_ft: listing[6]
           }
         };
